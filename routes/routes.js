@@ -22,7 +22,12 @@ module.exports = function (app) {
 
     app.route('/comments')
         .get(commentController.list_all_comments)
-        .post(commentController.create_a_comment);;
+        .post(commentController.create_a_comment);
+
+    app.route('/comments/:pin', function (req, res) {
+        res.send(req.params.pin);
+    })
+        .get(commentController.list_pin_comments);    
 
     app.route('/comments/:guestId')
         .delete(commentController.delete_a_comment);
