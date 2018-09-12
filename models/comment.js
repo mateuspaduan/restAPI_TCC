@@ -13,6 +13,9 @@ var CommentSchema = new Schema({
     },
     guestComment: {
         type: String
+    },
+    timestamp: {
+        type: String
     }
 });
 
