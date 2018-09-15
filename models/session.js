@@ -17,7 +17,7 @@ var SessionSchema = new Schema({
     guests: [String],
     
     active:{
-        type: String
+        type: Boolean
     }
 });
 
