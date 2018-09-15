@@ -34,20 +34,13 @@ exports.create_a_comment = function (req, res) {
         if (err)
             res.send(err);
 
-        if(comment.length){
-
-            var new_comment = new Comment(req.body);
-            new_comment.save(function (err, comment) {
-                if (err)
-                    res.send(err);
-                res.json(comment);
-            });
-        }
-
-        else{
-
-            res.json({ message: 'Not in the session' });
-        }
+        res.json(comment); //Retorna o JSON da sessão
+        // var new_comment = new Comment(req.body);
+        // new_comment.save(function (err, comm) {
+        //     if (err)
+        //         res.send(err);
+        //     res.json(comm);
+        // });
     });
 };
 
