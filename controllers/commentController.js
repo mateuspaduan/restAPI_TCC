@@ -29,15 +29,14 @@ exports.list_pin_comments = function (req, res) {
 
 exports.create_a_comment = function (req, res) {
 
-    var new_comment = new Comment(req.body);
-
-    Session.find({ pin: req.body.pin, guests: { "$in": [req.body.guestId] } }, function (err, comment) {
+    Session.find({ pin: req.params.sessionId, guests: { "$in": [req.params.guestId] } }, function (err, comment) {
         
         if (err)
             res.send(err);
 
         if(comment.length){
 
+            var new_comment = new Comment(req.body);
             new_comment.save(function (err, comment) {
                 if (err)
                     res.send(err);
@@ -47,7 +46,7 @@ exports.create_a_comment = function (req, res) {
 
         else{
 
-            res.json({ message: 'Out of the session' });
+            res.json({ message: 'Not in the session' });
         }
     });
 };

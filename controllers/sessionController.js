@@ -1,8 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-Session = mongoose.model('Sessions'),
-User = mongoose.model('Users');
+Session = mongoose.model('Sessions');
 
 exports.list_all_sessions = function (req, res) {
 
@@ -16,20 +15,11 @@ exports.list_all_sessions = function (req, res) {
 exports.create_a_session = function (req, res) {
 
     var new_session = new Session(req.body);
-    User.find({ email: req.body.owner, isUser: false }, function(err, session){
-
-        if(err){
+    new_session.save(function (err, task) {
+        if (err)
             res.send(err);
-        }
-
-        if(session.length){
-            new_session.save(function (err, task) {
-                if (err)
-                    res.send(err);
-                res.json(task);
-            });
-        }
-    })
+        res.json(task);
+    });
 };
 
 exports.delete_a_session = function (req, res) {

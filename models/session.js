@@ -10,15 +10,11 @@ var SessionSchema = new Schema({
     },
     time: {
         type: String
-    },  
+    },
     owner: {
         type: String
     },
-    guests: [String],
-    
-    active:{
-        type: String
-    }
+    guests: [String]
 });
 
 module.exports = mongoose.model('Sessions', SessionSchema);
