@@ -13,20 +13,6 @@ exports.list_all_comments = function (req, res) {
     });
 };
 
-exports.list_pin_comments = function (req, res) {
-
-    Comment.find( { pin: req.params.pin }, function(err, comment) {
-
-        if(err){
-            res.send(err);
-        }
-
-        if(comment.length){
-            res.json(comment);
-        }
-    })
-}
-
 exports.create_a_comment = function (req, res) {
 
     Session.find({ pin: req.params.sessionId, guests: { "$in": [req.params.guestId] } }, function (err, comment) {
