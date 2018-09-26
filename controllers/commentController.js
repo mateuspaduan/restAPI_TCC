@@ -8,8 +8,8 @@ exports.list_all_comments = function (req, res) {
 
     Comment.find({}, function (err, comment) {
         if (err)
-            res.send(err);
-        res.json(comment);
+            res.status(500).send(err);
+        res.status(200).json(comment);
     });
 };
 
@@ -18,11 +18,11 @@ exports.list_pin_comments = function (req, res) {
     Comment.find( { pin: req.params.pin }, function(err, comment) {
 
         if(err){
-            res.send(err);
+            res.status(500).send(err);
         }
 
         if(comment.length){
-            res.json(comment);
+            res.status(200).json(comment);
         }
     })
 }
@@ -34,14 +34,14 @@ exports.create_a_comment = function (req, res) {
     Session.find({ pin: req.body.pin, guests: { "$in": [req.body.guestId] } }, function (err, comment) {
         
         if (err)
-            res.send(err);
+            res.status(500).send(err);
 
         if(comment.length){
 
             new_comment.save(function (err, comment) {
                 if (err)
-                    res.send(err);
-                res.json(comment);
+                    res.status(500).send(err);
+                res.status(200).json(comment);
             });
         }
 
@@ -56,7 +56,7 @@ exports.delete_a_comment = function (req, res) {
 
     Comment.remove({ pin: req.params.guestId }, function (err, session) {
         if (err)
-            res.send(err);
-        res.json({ message: 'Task successfully deleted' });
+            res.status(500).send(err);
+        res.status(200).json({ message: 'Task successfully deleted' });
     });
 }
