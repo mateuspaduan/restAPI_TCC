@@ -142,7 +142,7 @@ GET /sessions/comment
 
 ```
 {
-    "email": "string",
+    "userToken": "string",
     "sessionId": "string"
 }
 ```
