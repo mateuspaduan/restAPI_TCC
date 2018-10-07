@@ -125,6 +125,7 @@ POST /sessions/comment
 ```
 {
     "sessionId": "string",
+    "timestamp": "string,
     "reaction": "string",
     "comment": "string" (optional)
 }
@@ -155,6 +156,7 @@ Validações:
 ```
 [
     {
+        "timestamp": "string",
         "reaction": "string",
         "comment": "string" (optional)
     },
