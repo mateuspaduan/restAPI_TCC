@@ -32,21 +32,20 @@ exports.create_a_comment = function (req, res) {
     var new_comment = new Comment(req.body);
 
     Session.find({ pin: req.body.pin, guests: { "$in": [req.body.guestId] } }, function (err, comment) {
-        
-        if (err)
+
+        if (err) {
             res.status(500).send(err);
+        }
 
-        if(comment.length){
-
+        if (comment.length) {
             new_comment.save(function (err, comment) {
                 if (err)
                     res.status(500).send(err);
-                res.status(200).json(comment);
+                res.status(200).send();
             });
         }
 
-        else{
-
+        else {
             res.json({ message: 'Out of the session' });
         }
     });
