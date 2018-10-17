@@ -86,6 +86,13 @@ Header:
 ```
 "Authenticated": "userToken"
 ```
+Body:
+```
+{
+    "pin": "string",
+    "time": "string"
+}
+```
 
 Validações:
 - Email está cadastrado?
@@ -93,12 +100,6 @@ Validações:
 
 Obs.: setar no usuário a sessão que ele acabou de entrar num campo de sessão atual e na lista das sessões criadas por ele. Mas antes, verificar se `session == ""`, caso contrário verificar se o usuário era dono da sessão que ele estava. Caso fosse, alterar o campo `isActive` para `false`.
 
-200
-```
-{
-    "sessionId": "string"
-}
-```
 
 ## Fetch sessions
 

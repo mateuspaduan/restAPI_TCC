@@ -16,10 +16,6 @@ var UserSchema = new Schema({
         type: String
     },
 
-    isUser: {
-        type: Boolean
-    },
-
     pinSession: {
         type: String
     }

@@ -16,7 +16,8 @@ exports.list_all_sessions = function (req, res) {
 exports.create_a_session = function (req, res) {
 
     var new_session = new Session(req.body);
-    User.find({ email: req.body.owner, isUser: false }, function(err, session){
+
+    User.find({ email: req.body.owner }, function(err, session){
 
         if(err){
             res.status(500).send(err);
@@ -26,7 +27,7 @@ exports.create_a_session = function (req, res) {
             new_session.save(function (err, task) {
                 if (err)
                     res.status(500).send(err);
-                res.status(200).json(task);
+                res.status(200).send();
             });
         }
     })
