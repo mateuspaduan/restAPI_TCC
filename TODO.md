@@ -59,12 +59,15 @@ Validações:
 --
 
 ### Join as user
-POST /sessions/join
+POST /sessions/join\
+Header:
+```
+"Authenticated": "userToken"
+```
 
 ```
 {
     "sessionId": "string"
-    "userToken": "string" (ou email do usuario, mas pref ser um token/id)
 }
 ```
 
@@ -73,19 +76,22 @@ Validações:
 - Sessão está ativa?
 - Email é de algum usuário?
 
+Obs.: setar no usuário a sessão que ele acabou de entrar. Mas antes, verificar se `session == ""`, caso contrário verificar se o usuário era dono da sessão que ele estava. Caso fosse, alterar o campo `isActive` para `false`.
+
 --
 
 ## Create session
-POST /sessions
+POST /sessions\
+Header:
+```
+"Authenticated": "userToken"
+```
 
-```
-{
-    "userToken": "string" (ou email mas pref token/id)
-}
-```
 Validações:
 - Email está cadastrado?
 - Usuário está conectado em alguma sessão?
+
+Obs.: setar no usuário a sessão que ele acabou de entrar num campo de sessão atual e na lista das sessões criadas por ele. Mas antes, verificar se `session == ""`, caso contrário verificar se o usuário era dono da sessão que ele estava. Caso fosse, alterar o campo `isActive` para `false`.
 
 200
 ```
@@ -95,18 +101,18 @@ Validações:
 ```
 
 ## Fetch sessions
-GET /sessions/
 
+### Fetch sessions created by user
+GET /sessions/\
+Header:
 ```
-{
-    "userToken": "string" (ou email mas pref token/id)
-}
+"Authenticated": "userToken"
 ```
 
 Validações:
 - Token é valido? (usuario existe?)
 
-200
+200 (retorna apenas sessões criadas pelo usuário)
 ```
 {
     "sessions": [
@@ -117,55 +123,23 @@ Validações:
     ]
 }
 ```
---
 
-## React/comment on session
-POST /sessions/comment
-
-```
-{
-    "sessionId": "string",
-    "timestamp": "string,
-    "reaction": "string",
-    "comment": "string" (optional)
-}
-```
+### Fetch active sessions
+GET /sessions/active
 
 Validações:
-- Sessão existe?
-- Sessão está ativa?
+- Token é valido? (usuario existe?)
 
-
---
-
-## Fetch comments
-GET /sessions/comment
-
+200 (retorna todas as sessões ativas)
 ```
 {
-    "userToken": "string",
-    "sessionId": "string"
+    "sessions": [
+        "string",
+        "string",
+        ...
+        "string"
+    ]
 }
-```
-
-Validações:
-- Usuário existe?
-- Usuário é dono da sessão?
-
-200
-```
-[
-    {
-        "timestamp": "string",
-        "reaction": "string",
-        "comment": "string" (optional)
-    },
-    {...},
-    {...},
-    .
-    .
-    {...}
-]
 ```
 --
 
