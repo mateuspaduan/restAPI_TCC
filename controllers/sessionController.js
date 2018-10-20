@@ -18,7 +18,7 @@ exports.list_user_sessions = function (req, res) {
                     res.status(500).send('Não existem sessões criadas por esse usuário.');
                 }
                 if (session.length()) {
-                    res.stats(200).send(session[0].pin);
+                    res.status(200).send(session[0].pin);
                 }
             })
         }
