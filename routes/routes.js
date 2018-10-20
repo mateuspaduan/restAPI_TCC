@@ -6,7 +6,7 @@ module.exports = function (app) {
 
     // todoList Routes
     app.route('/sessions')
-        .get(sessionController.list_all_sessions)
+        .get(sessionController.list_user_sessions)
         .post(sessionController.create_a_session);
 
     app.route('/sessions/:sessionId/', function (req, res) {

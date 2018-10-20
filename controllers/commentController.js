@@ -16,13 +16,11 @@ exports.list_all_comments = function (req, res) {
 exports.list_pin_comments = function (req, res) {
 
     Comment.find( { pin: req.params.pin }, function(err, comment) {
-
         if(err){
             res.status(500).send(err);
         }
-
         if(comment.length){
-            res.status(200).json(comment);
+            res.status(200).send(comment);
         }
     })
 }
@@ -30,13 +28,10 @@ exports.list_pin_comments = function (req, res) {
 exports.create_a_comment = function (req, res) {
 
     var new_comment = new Comment(req.body);
-
     Session.find({ pin: req.body.pin, guests: { "$in": [req.body.guestId] } }, function (err, comment) {
-
         if (err) {
             res.status(500).send(err);
         }
-
         if (comment.length) {
             new_comment.save(function (err, comment) {
                 if (err)
@@ -44,7 +39,6 @@ exports.create_a_comment = function (req, res) {
                 res.status(200).send();
             });
         }
-
         else {
             res.json({ message: 'Out of the session' });
         }

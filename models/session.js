@@ -13,9 +13,7 @@ var SessionSchema = new Schema({
     },  
     owner: {
         type: String
-    },
-    guests: [String],
-    
+    },    
     active:{
         type: Boolean
     }
