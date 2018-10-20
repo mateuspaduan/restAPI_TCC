@@ -13,7 +13,7 @@ module.exports = function (app) {
         res.send(req.params.sessionId);
     })
         .put(sessionController.add_a_guest)
-        .delete(sessionController.delete_a_session);
+        .delete(sessionController.disable_a_session);
 
     app.route('/sessions/:sessionId/:guestId', function (req, res) {
         res.send(req.params.sessionId);

@@ -42,13 +42,27 @@ exports.create_a_session = function (req, res) {
     })
 };
 
-exports.delete_a_session = function (req, res) {
+exports.disable_a_session = function (req, res) {
 
-    Session.remove({ pin: req.params.sessionId }, function (err, session) {
-        if (err)
-            res.status(500).send('Não foi possivel deletar a sessão.');
-        res.status(200).send(session);
-    });
+    Session.find({ owner: req.headers.authorization }, function (err, session) {
+        if (err) {
+            res.status(500).send('Algo de errado ocorreu');
+        }
+        if (session.length()) {
+            Session.update({ owner: req.headers.authorization }, { $set: { active: false }}, function (err, session) {
+                if (err) {
+                    res.status(500).send('Algo de errado ocorreu');
+                }
+                res.status(200).send('A sessão foi desativada.');
+            })
+        }
+    })
+
+    // Session.remove({ pin: req.params.sessionId }, function (err, session) {
+    //     if (err)
+    //         res.status(500).send('Não foi possivel deletar a sessão.');
+    //     res.status(200).send(session);
+    // });
 }
 
 exports.add_a_guest = function (req, res) {
