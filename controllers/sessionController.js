@@ -28,15 +28,15 @@ exports.list_user_sessions = function (req, res) {
 exports.create_a_session = function (req, res) {
 
     var new_session = new Session(req.body);
-    User.find({ email: req.body.owner }, function(err, session){
+    User.find({ email: req.body.owner }, function (err, user) {
         if(err){
             res.status(500).send('Usuário não existe.');
         }
-        if(session.length){
+        if(user.length){
             new_session.save(function (err, task) {
                 if (err)
                     res.status(500).send('Erro ao criar sessão.');
-                res.status(200).send();
+                res.status(200).send('Sessão criada com sucesso.');
             });
         }
     })
