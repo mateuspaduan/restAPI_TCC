@@ -37,6 +37,9 @@ module.exports = function (app) {
         .get(userController.list_all_users)
         .post(userController.create_a_user);
 
+    app.route('/login')
+        .post(userController.login_a_user);    
+
     app.route('/users/:userId/', function (req, res) {
         res.send(req.params.userId);
     })
