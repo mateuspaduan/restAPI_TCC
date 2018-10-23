@@ -7,10 +7,8 @@ User = mongoose.model('Users');
 exports.list_user_sessions = function (req, res) {
 
     let userId = req.headers.authorization;
-    console.log(userId);
 
     User.findById(userId, function (err, user) {
-        
         if (err || !user) {
             res.status(404).send({ message:'Usuário não está cadastrado' });
         }

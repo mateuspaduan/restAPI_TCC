@@ -2,7 +2,8 @@
 
 var mongoose = require('mongoose'),
 Session = mongoose.model('Sessions'),
-Comment = mongoose.model('Comments');
+Comment = mongoose.model('Comments'),
+User = mongoose.model('Users');
 
 exports.list_all_comments = function (req, res) {
 
@@ -16,7 +17,7 @@ exports.list_all_comments = function (req, res) {
 exports.list_pin_comments = function (req, res) {
 
     Comment.find( { pin: req.params.pin }, function(err, comment) {
-        if(err){
+        if(err || !comment.length){
             res.status(500).send(err);
         }
         if(comment.length){
@@ -25,24 +26,33 @@ exports.list_pin_comments = function (req, res) {
     })
 }
 
-exports.create_a_comment = function (req, res) {
+exports.create_a_comment = (req, res) => {
 
-    var new_comment = new Comment(req.body);
-    Session.find({ pin: req.body.pin, guests: { "$in": [req.body.guestId] } }, function (err, comment) {
-        if (err) {
-            res.status(500).send(err);
-        }
-        if (comment.length) {
-            new_comment.save(function (err, comment) {
-                if (err)
-                    res.status(500).send(err);
-                res.status(200).send();
-            });
-        }
-        else {
-            res.json({ message: 'Out of the session' });
-        }
-    });
+    let new_comment = new Comment(req.body);
+    let userId = req.headers.authorization
+
+    if (userId) {
+        User.findById(userId, (err, user) => {
+            if (err || !user) {
+                res.status(401).send({ message: "Usuário não encontrado"})
+            }
+            if (user.pinSession == req.body.pin) {
+                new_comment.save((err) => {
+                    if (err)
+                        res.status(500).send(err);
+                    res.status(200).send();
+                });
+            } else {
+                res.status(500).json({ message: "Usuário não conectado à sessão" })
+            }
+        });
+    } else {
+        new_comment.save((err) => {
+            if (err)
+                res.status(500).send(err);
+            res.status(200).send();
+        });
+    }
 };
 
 exports.delete_a_comment = function (req, res) {
