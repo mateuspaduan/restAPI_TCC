@@ -14,7 +14,7 @@ var SessionSchema = new Schema({
     owner: {
         type: String
     },    
-    active:{
+    isActive:{
         type: Boolean
     }
 });

@@ -8,17 +8,18 @@ exports.list_user_sessions = function (req, res) {
 
     let userId = req.headers.authorization;
 
-    User.find({ _id: userId }, function (err, user) {
-        if (err) {
-            res.status(500).send('Usuário não está cadastrado');
+    User.findById(userId, function (err, user) {
+        if (err || !user) {
+            res.status(404).send({ message:'Usuário não está cadastrado' });
         }
-        if (user.length()) {
-            Session.find({ owner: userId }, function (err, session) {
-                if (err) {
-                    res.status(500).send('Não existem sessões criadas por esse usuário.');
+        if (user) {
+            Session.find({ owner: userId }, function (err, sessions) {
+
+                if (err || !sessions.length) {
+                    res.status(404).send({ message:'Não existem sessões criadas por esse usuário.' });
                 }
-                if (session.length()) {
-                    res.status(200).send(session[0].pin);
+                if (sessions.length) {
+                    res.status(200).send(sessions);
                 }
             })
         }
@@ -27,16 +28,24 @@ exports.list_user_sessions = function (req, res) {
 
 exports.create_a_session = function (req, res) {
 
-    var new_session = new Session(req.body);
-    User.find({ email: req.body.owner }, function (err, user) {
-        if(err){
-            res.status(500).send('Usuário não existe.');
+    let userId = req.headers.authorization;
+    var new_session = new Session({
+        pin: req.body.pin,
+        time: req.body.time,
+        owner: userId,
+        isActive: req.body.isActive
+    });
+
+    User.findById(userId, function (err, user) {
+        if (err || !user) {
+            res.status(500).json({ message: 'Usuário não existe.' });
         }
-        if(user.length){
-            new_session.save(function (err, task) {
-                if (err)
-                    res.status(500).send('Erro ao criar sessão.');
-                res.status(200).send('Sessão criada com sucesso.');
+        if (user) {
+            new_session.save(function (err) {
+                if (err) {
+                    res.status(500).json({ message: 'Erro ao criar sessão.' });
+                }
+                res.status(200).send();
             });
         }
     })
@@ -44,12 +53,13 @@ exports.create_a_session = function (req, res) {
 
 exports.disable_a_session = function (req, res) {
 
-    Session.find({ owner: req.headers.authorization }, function (err, session) {
-        if (err) {
+    let userId = req.headers.authorization;
+    Session.findById(userId, function (err, session) {
+        if (err || !session) {
             res.status(500).send('Algo de errado ocorreu');
         }
-        if (session.length()) {
-            Session.update({ owner: req.headers.authorization }, { $set: { active: false }}, function (err, session) {
+        if (session) {
+            Session.update({ owner: userId }, { $set: { isActive: false }}, function (err, session) {
                 if (err) {
                     res.status(500).send('Algo de errado ocorreu');
                 }
@@ -67,26 +77,20 @@ exports.disable_a_session = function (req, res) {
 
 exports.add_a_guest = function (req, res) {
 
-    Session.find({ pin: req.params.sessionId}, function (err, session) {
-        if (err) {
+    let sessionId = req.params.sessionId
+
+    Session.find({ pin: sessionId }, function (err, session) {
+        if (err || !session.length) {
             res.status(500).send('Sessão não existe ou não está ativa.');
         }
-        if (session.length()) {
-            User.find({_id: req.headers.authorization }, function (err, user) {
-                if (err) {
-                    res.status(500).send('Usuário não está logado.');
-                }
-                if (user.length()) {
-                    if (session.length()) {
-                        User.update({ _id: req.headers.authorization }, { $set: { pinSession: req.params.sessionId } }, function (err, user){
-                            if (err){
-                                res.status(500).send('Usuário não está cadastrado.');
-                            }
-                        }) 
+        if (session.length) {
+            User.findOneAndUpdate({_id: req.headers.authorization },
+                { $set: { pinSession: sessionId } }, (err) => {
+                    if (err) {
+                        res.status(500).send('Usuário não está cadastrado.');
                     }
-                }
-                res.status(200).send('Usuário adicionado à sessão.');
-            })    
+            })
+            res.status(200).send(); 
         }
     })
 }
