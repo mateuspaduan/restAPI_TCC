@@ -50,3 +50,11 @@ exports.login_a_user = function (req, res) {
         res.status(200).send(user[0]._id);
     })
 }
+
+// utils
+exports.delete_all = (req, res) => {
+    User.remove({}, (err, res) => {
+        if (err) return res.send(500);
+        return res.send(204);
+    })
+}

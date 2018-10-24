@@ -26,6 +26,19 @@ exports.list_user_sessions = function (req, res) {
     })
 };
 
+exports.list_active_sessions = function (req, res) {
+
+    Session.find({ isActive: true }, function (err, sessions) {
+
+        if (err || !sessions.length) {
+            res.status(404).send({ message:'Não existem sessões ativas.' });
+        }
+        if (sessions.length) {
+            res.status(200).send(sessions);
+        }
+    })
+};
+
 exports.create_a_session = function (req, res) {
 
     let userId = req.headers.authorization;
@@ -45,8 +58,18 @@ exports.create_a_session = function (req, res) {
                 if (err) {
                     res.status(500).json({ message: 'Erro ao criar sessão.' });
                 }
-                res.status(200).send();
             });
+            if (user.pinSession) {
+                let conditions = { pin: user.pinSession, owner: user._id };
+                let deactivateSession = { $set: { isActive: false }};
+                Session.findOneAndUpdate(conditions, deactivateSession, () => {});
+            }
+            user.update({ $set: { pinSession: new_session.pin } }, (err) => {
+                if (err) {
+                    res.status(500).send('Erro ao entrar na sessão!');
+                }
+                res.status(200).send();
+            })
         }
     })
 };
@@ -92,5 +115,14 @@ exports.add_a_guest = function (req, res) {
             })
             res.status(200).send(); 
         }
+    })
+}
+
+// utils
+exports.delete_all = (req, res) => {
+    Session.remove({}, (err, res) => {
+        
+        if (err) return res.send(500);
+        return res.send(204);
     })
 }
