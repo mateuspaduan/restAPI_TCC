@@ -26,7 +26,7 @@ exports.list_pin_comments = function (req, res) {
     })
 }
 
-exports.create_a_comment = (req, res) => {
+exports.create_a_comment = async (req, res) => {
 
     let new_comment = new Comment(req.body);
     let userId = req.headers.authorization
@@ -40,7 +40,6 @@ exports.create_a_comment = (req, res) => {
                 new_comment.save((err) => {
                     if (err)
                         res.status(500).send(err);
-                    res.status(200).send();
                 });
             } else {
                 res.status(500).json({ message: "Usuário não conectado à sessão" })
@@ -50,10 +49,33 @@ exports.create_a_comment = (req, res) => {
         new_comment.save((err) => {
             if (err)
                 res.status(500).send(err);
-            res.status(200).send();
         });
     }
+    var comments = await sessionCommentPercentage(req.body.pin);
+    let total = comments.loving + comments.whatever + comments.hating
+    for (var key in comments) {
+        comments[key] /= total
+    }
+    res.status(200).send(comments);
 };
+
+async function sessionCommentPercentage(pin) {
+    var commentsCount = {
+        loving: 0.0,
+        whatever: 0.0,
+        hating: 0.0
+    };
+    await Comment.find({ pin: pin, guestComment: "LOVING" }, (err, comments) => {
+        commentsCount.loving = comments.length;
+    });
+    await Comment.find({ pin: pin, guestComment: "WHATEVER" }, (err, comments) => {
+        commentsCount.whatever = comments.length;
+    });
+    await Comment.find({ pin: pin, guestComment: "HATING" }, (err, comments) => {
+        commentsCount.hating = comments.length;
+    });
+    return await commentsCount
+}
 
 exports.delete_a_comment = function (req, res) {
 

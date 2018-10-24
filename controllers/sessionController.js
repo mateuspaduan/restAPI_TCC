@@ -102,17 +102,23 @@ exports.add_a_guest = function (req, res) {
 
     let sessionId = req.params.sessionId
 
-    Session.find({ pin: sessionId }, function (err, session) {
+    Session.find({ pin: sessionId, isActive: true }, function (err, session) {
         if (err || !session.length) {
             res.status(500).send('Sessão não existe ou não está ativa.');
         }
         if (session.length) {
-            User.findOneAndUpdate({_id: req.headers.authorization },
-                { $set: { pinSession: sessionId } }, (err) => {
+            let updateUserSession = { $set: { pinSession: sessionId }};
+            User.findOneAndUpdate({_id: req.headers.authorization }, updateUserSession,
+                (err, user) => {
                     if (err) {
                         res.status(500).send('Usuário não está cadastrado.');
                     }
-            })
+                    if (user.pinSession && user.pinSession != sessionId) {
+                        let conditions = { pin: user.pinSession, owner: user._id };
+                        let deactivateSession = { $set: { isActive: false }};
+                        Session.findOneAndUpdate(conditions, deactivateSession, () => {});
+                    }
+            });
             res.status(200).send(); 
         }
     })
