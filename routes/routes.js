@@ -4,10 +4,21 @@ module.exports = function (app) {
     var commentController = require('../controllers/commentController');
     var userController = require('../controllers/userController')
 
+    // clear database
+    app.route('/sessions/clear')
+        .post(sessionController.delete_all);
+    app.route('/comments/clear')
+        .post(commentController.delete_all);
+    app.route('/users/clear')
+        .post(userController.delete_all);
+    
     // todoList Routes
     app.route('/sessions')
         .get(sessionController.list_user_sessions)
         .post(sessionController.create_a_session);
+
+    app.route('/sessions/active')
+        .get(sessionController.list_active_sessions);
 
     app.route('/sessions/:sessionId/', function (req, res) {
         res.send(req.params.sessionId);

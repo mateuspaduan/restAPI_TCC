@@ -63,3 +63,11 @@ exports.delete_a_comment = function (req, res) {
         res.status(200).json({ message: 'Task successfully deleted' });
     });
 }
+
+// utils
+exports.delete_all = (req, res) => {
+    Comment.remove({}, (err, res) => {
+        if (err) return res.send(500);
+        return res.send(204);
+    })
+}
