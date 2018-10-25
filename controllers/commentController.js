@@ -14,15 +14,14 @@ exports.list_all_comments = function (req, res) {
     });
 };
 
-exports.list_pin_comments = function (req, res) {
+exports.list_pin_comments = (req, res) => {
 
-    Comment.find( { pin: req.params.pin }, function(err, comment) {
-        if(err || !comment.length){
-            res.status(500).send(err);
-        }
-        if(comment.length){
-            res.status(200).send(comment);
-        }
+    Comment.find( { pin: req.params.pin }, (err, comment) => {
+        if (err) res.status(500).send(err);
+        if (!comment.length) res.status(404).send(
+            { message: "Ainda não há reações para essa sessão!"}
+        );
+        if (comment.length) res.status(200).send(comment);
     })
 }
 
@@ -60,21 +59,16 @@ exports.create_a_comment = async (req, res) => {
 };
 
 async function sessionCommentPercentage(pin) {
+    const lovingComents = await Comment.find({ pin: pin, guestComment: "LOVING" }).exec();
+    const whateverComents = await Comment.find({ pin: pin, guestComment: "WHATEVER" }).exec();
+    const hatingComents = await Comment.find({ pin: pin, guestComment: "HATING" }).exec();
+
     var commentsCount = {
-        loving: 0.0,
-        whatever: 0.0,
-        hating: 0.0
+        loving: lovingComents.length,
+        whatever: whateverComents.length,
+        hating: hatingComents.length
     };
-    await Comment.find({ pin: pin, guestComment: "LOVING" }, (err, comments) => {
-        commentsCount.loving = comments.length;
-    });
-    await Comment.find({ pin: pin, guestComment: "WHATEVER" }, (err, comments) => {
-        commentsCount.whatever = comments.length;
-    });
-    await Comment.find({ pin: pin, guestComment: "HATING" }, (err, comments) => {
-        commentsCount.hating = comments.length;
-    });
-    return await commentsCount
+    return commentsCount;
 }
 
 exports.delete_a_comment = function (req, res) {
