@@ -59,21 +59,16 @@ exports.create_a_comment = async (req, res) => {
 };
 
 async function sessionCommentPercentage(pin) {
+    const lovingComents = await Comment.find({ pin: pin, guestComment: "LOVING" }).exec();
+    const whateverComents = await Comment.find({ pin: pin, guestComment: "WHATEVER" }).exec();
+    const hatingComents = await Comment.find({ pin: pin, guestComment: "HATING" }).exec();
+
     var commentsCount = {
-        loving: 0.0,
-        whatever: 0.0,
-        hating: 0.0
+        loving: lovingComents.length,
+        whatever: whateverComents.length,
+        hating: hatingComents.length
     };
-    await Comment.find({ pin: pin, guestComment: "LOVING" }, (err, comments) => {
-        commentsCount.loving = comments.length;
-    });
-    await Comment.find({ pin: pin, guestComment: "WHATEVER" }, (err, comments) => {
-        commentsCount.whatever = comments.length;
-    });
-    await Comment.find({ pin: pin, guestComment: "HATING" }, (err, comments) => {
-        commentsCount.hating = comments.length;
-    });
-    return await commentsCount
+    return commentsCount;
 }
 
 exports.delete_a_comment = function (req, res) {
