@@ -4,19 +4,17 @@ var mongoose = require('mongoose'),
 Session = mongoose.model('Sessions'),
 User = mongoose.model('Users');
 
-exports.list_user_sessions = function (req, res) {
+exports.list_user_sessions = (req, res) => {
 
     let userId = req.headers.authorization;
 
-    User.findById(userId, function (err, user) {
-        if (err || !user) {
-            res.status(404).send({ message:'Usuário não está cadastrado' });
-        }
+    User.findById(userId, (err, user) => {
+        if (err) res.status(500).send(err);
+        if (!user) res.status(404).send({ message: 'Usuário não está cadastrado' });
         if (user) {
-            Session.find({ owner: userId }, function (err, sessions) {
-
+            Session.find({ owner: userId }, (err, sessions) => {
                 if (err || !sessions.length) {
-                    res.status(404).send({ message:'Não existem sessões criadas por esse usuário.' });
+                    res.status(404).send({ message: 'Não existem sessões criadas por esse usuário.' });
                 }
                 if (sessions.length) {
                     res.status(200).send(sessions);
@@ -30,9 +28,10 @@ exports.list_active_sessions = function (req, res) {
 
     Session.find({ isActive: true }, function (err, sessions) {
 
-        if (err || !sessions.length) {
-            res.status(404).send({ message:'Não existem sessões ativas.' });
-        }
+        if (err || !sessions.length) res.status(500).send(err);
+        if (!sessions.length) res.status(404).send(
+            { message:'Não existem sessões ativas.' }
+        );
         if (sessions.length) {
             res.status(200).send(sessions);
         }
@@ -50,9 +49,8 @@ exports.create_a_session = function (req, res) {
     });
 
     User.findById(userId, function (err, user) {
-        if (err || !user) {
-            res.status(500).json({ message: 'Usuário não existe.' });
-        }
+        if (err) res.status(500).send(err); 
+        if (!user) res.status(500).json({ message: 'Usuário não existe.' });
         if (user) {
             new_session.save(function (err) {
                 if (err) {

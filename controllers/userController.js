@@ -12,7 +12,7 @@ exports.list_all_users = function (req, res) {
     });
 };
 
-exports.create_a_user = function (req, res) {
+exports.create_a_user = (req, res) => {
 
     User.find({ email: req.body.email }, function (err, user) {
         if (err) {
@@ -23,12 +23,12 @@ exports.create_a_user = function (req, res) {
 
             new_user.save(function (err, user) {
                 if (err)
-                    res.status(500).send({ message: 'Não foi possível criar usuário.' });
+                    res.status(500).send({ message: 'Não foi possível finalizar o cadastro.' });
                 res.status(200).json(user._id);
             });
         }
         else {
-            res.status(500).json({ message: 'Usuário já existe com esse email.' });
+            res.status(500).json({ message: 'Email já cadastrado.' });
         }
     })
 };
@@ -42,12 +42,12 @@ exports.delete_a_user = function (req, res) {
     });
 };
 
-exports.login_a_user = function (req, res) {
+exports.login_a_user = (req, res) => {
 
     User.find({ email: req.body.email, password: req.body.password }, function (err, user) {
-        if (err)
-            res.status(500).send('Usuário não existe.');
-        res.status(200).send(user[0]._id);
+        if (err) res.status(500).send(err);
+        if (!user.length) res.status(404).send({ message: 'Email ou senha inválidos'});
+        if (user.length) res.status(200).send(user[0]._id);
     })
 }
 

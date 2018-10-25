@@ -14,15 +14,14 @@ exports.list_all_comments = function (req, res) {
     });
 };
 
-exports.list_pin_comments = function (req, res) {
+exports.list_pin_comments = (req, res) => {
 
-    Comment.find( { pin: req.params.pin }, function(err, comment) {
-        if(err || !comment.length){
-            res.status(500).send(err);
-        }
-        if(comment.length){
-            res.status(200).send(comment);
-        }
+    Comment.find( { pin: req.params.pin }, (err, comment) => {
+        if (err) res.status(500).send(err);
+        if (!comment.length) res.status(404).send(
+            { message: "Ainda não há reações para essa sessão!"}
+        );
+        if (comment.length) res.status(200).send(comment);
     })
 }
 
