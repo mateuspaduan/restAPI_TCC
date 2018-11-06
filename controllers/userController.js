@@ -53,7 +53,7 @@ exports.login_a_user = (req, res) => {
 
 // utils
 exports.delete_all = (req, res) => {
-    User.remove({}, (err, res) => {
+    User.remove({}, (err, user) => {
         if (err) return res.send(500);
         return res.send(204);
     })

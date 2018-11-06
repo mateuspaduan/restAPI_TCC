@@ -31,12 +31,12 @@ exports.create_a_comment = async (req, res) => {
     let userId = req.headers.authorization
 
     if (userId) {
-        User.findById(userId, (err, user) => {
+        User.findById(userId, async (err, user) => {
             if (err || !user) {
                 res.status(401).send({ message: "Usuário não encontrado"})
             }
             if (user.pinSession == req.body.pin) {
-                new_comment.save((err) => {
+                await new_comment.save((err) => {
                     if (err)
                         res.status(500).send(err);
                 });
@@ -45,13 +45,14 @@ exports.create_a_comment = async (req, res) => {
             }
         });
     } else {
-        new_comment.save((err) => {
+        await new_comment.save((err) => {
             if (err)
                 res.status(500).send(err);
         });
     }
     var comments = await sessionCommentPercentage(req.body.pin);
     let total = comments.loving + comments.whatever + comments.hating
+
     for (var key in comments) {
         comments[key] /= total
     }
@@ -82,7 +83,7 @@ exports.delete_a_comment = function (req, res) {
 
 // utils
 exports.delete_all = (req, res) => {
-    Comment.remove({}, (err, res) => {
+    Comment.remove({}, (err, comment) => {
         if (err) return res.send(500);
         return res.send(204);
     })

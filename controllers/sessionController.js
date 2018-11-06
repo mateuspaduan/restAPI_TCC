@@ -111,10 +111,12 @@ exports.add_a_guest = function (req, res) {
                     if (err) {
                         res.status(500).send('Usuário não está cadastrado.');
                     }
-                    if (user.pinSession && user.pinSession != sessionId) {
-                        let conditions = { pin: user.pinSession, owner: user._id };
-                        let deactivateSession = { $set: { isActive: false }};
-                        Session.findOneAndUpdate(conditions, deactivateSession, () => {});
+                    if (user) {
+                        if (user.pinSession && (user.pinSession != sessionId)) {
+                            let conditions = { pin: user.pinSession, owner: user._id };
+                            let deactivateSession = { $set: { isActive: false }};
+                            Session.findOneAndUpdate(conditions, deactivateSession, () => {});
+                        }
                     }
             });
             res.status(200).send(); 
@@ -124,9 +126,16 @@ exports.add_a_guest = function (req, res) {
 
 // utils
 exports.delete_all = (req, res) => {
-    Session.remove({}, (err, res) => {
+    Session.remove({}, (err, session) => {
         
         if (err) return res.send(500);
         return res.send(204);
-    })
+    });
+}
+
+exports.list_all = (req, res) => {
+    Session.find({}, (err, session) => {
+        if (err) return res.send(500);
+        return res.status(200).send(session);
+    });
 }

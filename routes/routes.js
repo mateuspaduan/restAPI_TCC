@@ -6,6 +6,7 @@ module.exports = function (app) {
 
     // clear database
     app.route('/sessions/clear')
+        .get(sessionController.list_all)
         .post(sessionController.delete_all);
     app.route('/comments/clear')
         .post(commentController.delete_all);
