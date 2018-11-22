@@ -26,6 +26,11 @@ module.exports = function (app) {
         .put(sessionController.add_a_guest)
         .delete(sessionController.disable_a_session);
 
+    app.route('/sessions/:sessionName', function (req, res) {
+        res.send(req.params.sessionName);
+    })
+        .put(sessionController.leave_session);    
+
     app.route('/sessions/:sessionId/:guestId', function (req, res) {
         res.send(req.params.sessionId);
         res.send(req.params.guestId);

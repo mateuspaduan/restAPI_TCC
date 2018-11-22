@@ -88,12 +88,25 @@ exports.disable_a_session = function (req, res) {
             })
         }
     })
+}
 
-    // Session.remove({ pin: req.params.sessionId }, function (err, session) {
-    //     if (err)
-    //         res.status(500).send('Não foi possivel deletar a sessão.');
-    //     res.status(200).send(session);
-    // });
+exports.leave_session = function (req, res) {
+
+    let sessionName = req.params.sessionName;
+
+    Session.find({ pin: sessionName, isActive: true }, function (err, session) {
+        if (err || !session.length) {
+            res.status(500).send('Sessão não existe ou não está ativa.');
+        }
+        if (session.length) {
+            Session.update({ pin: sessionName }, { $set: { isActive: false }}, function (err, session) {
+                if (err) {
+                    res.status(500).send('Algo de errado ocorreu');
+                }
+            })
+            res.status(200).send(); 
+        }
+    })
 }
 
 exports.add_a_guest = function (req, res) {
