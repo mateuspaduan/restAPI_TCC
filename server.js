@@ -9,7 +9,7 @@ var express = require('express'),
 
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://admintcc:admintcc2@ds151662.mlab.com:51662/rtfs_tcc');
+mongoose.connect('mongodb+srv://admin:adminpro@cluster0.4nxxq.mongodb.net/test');
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
